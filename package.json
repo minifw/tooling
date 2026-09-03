@@ -1,12 +1,21 @@
 {
-  "name": "tooling",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^7"
-  }
+	"name": "@minifw/tooling",
+	"version": "0.1.0",
+	"module": "index.ts",
+	"bin": {
+		"minifw-tooling": "./src/cli.ts"
+	},
+	"type": "module",
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^7"
+	},
+	"dependencies": {
+		"@inquirer/prompts": "^8.7.1",
+		"chalk": "^6.0.0",
+		"commander": "^15.0.0",
+		"ora": "^9.4.1"
+	}
 }
