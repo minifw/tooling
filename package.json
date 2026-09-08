@@ -2,20 +2,40 @@
 	"name": "@minifw/tooling",
 	"version": "0.1.0",
 	"module": "index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./eslint": "./src/configs/eslint.ts",
+		"./prettier": "./src/configs/prettier.ts",
+		"./tsconfig": "./src/configs/tsconfig.json"
+	},
 	"bin": {
 		"minifw-tooling": "./src/cli.ts"
 	},
+	"scripts": {
+		"link-static": "bun run src/link-static/link-static.ts"
+	},
 	"type": "module",
 	"devDependencies": {
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"typescript": "^6"
 	},
 	"peerDependencies": {
-		"typescript": "^7"
+		"typescript": "^6"
 	},
 	"dependencies": {
-		"@inquirer/prompts": "^8.7.1",
-		"chalk": "^6.0.0",
-		"commander": "^15.0.0",
-		"ora": "^9.4.1"
+		"@inquirer/prompts": "^8",
+		"chalk": "^6",
+		"commander": "^15",
+		"eslint": "^9",
+		"eslint-config-prettier": "^10",
+		"eslint-plugin-jsdoc": "^57",
+		"eslint-plugin-prettier": "^5",
+		"eslint-plugin-unicorn": "^62",
+		"jiti": "^2",
+		"ora": "^9",
+		"prettier": "^3",
+		"prettier-plugin-css-order": "^2",
+		"prettier-plugin-jsdoc": "^1",
+		"typescript-eslint": "^8"
 	}
 }
