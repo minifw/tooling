@@ -113,7 +113,7 @@ describe("validateGitignore()", () => {
     expect(validateGitignore(directory, managedFiles)).toMatchObject({
       addedEntries: [],
     });
-    expect(fs.readFileSync(path.join(directory, ".gitignore"), "utf-8")).toBe(
+    expect(fs.readFileSync(path.join(directory, ".gitignore"), "utf8")).toBe(
       `${managedSectionComment}\n${managedFiles.join("\n")}\n`,
     );
   });

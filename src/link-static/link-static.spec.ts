@@ -32,10 +32,10 @@ describe("linkStaticFiles()", () => {
       fs.realpathSync(path.join(outputDirectory, ".github", "workflow.yml")),
     ).toBe(input);
     expect(
-      fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf-8"),
+      fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf8"),
     ).toContain("/.github/workflow.yml");
     expect(
-      fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf-8"),
+      fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf8"),
     ).not.toContain("\n.github/workflow.yml\n");
     expect(await linkStaticFiles(outputDirectory, inputDirectory)).toEqual([
       ".github/workflow.yml",
@@ -64,9 +64,9 @@ describe("linkStaticFiles()", () => {
 
     const output = path.join(outputDirectory, ".husky", "_", ".gitignore");
     expect(fs.lstatSync(output).isSymbolicLink()).toBe(false);
-    expect(fs.readFileSync(output, "utf-8")).toBe("*\n");
+    expect(fs.readFileSync(output, "utf8")).toBe("*\n");
     fs.writeFileSync(output, "outdated\n");
     await linkStaticFiles(outputDirectory, inputDirectory);
-    expect(fs.readFileSync(output, "utf-8")).toBe("*\n");
+    expect(fs.readFileSync(output, "utf8")).toBe("*\n");
   });
 });

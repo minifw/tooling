@@ -50,9 +50,9 @@ describe("syncStaticFiles()", () => {
     );
     for (const filepath of staticFiles) {
       const relativePath = path.relative(staticDirectory, filepath);
-      expect(
-        fs.readFileSync(path.join(repository, relativePath), "utf-8"),
-      ).toBe(fs.readFileSync(filepath, "utf-8"));
+      expect(fs.readFileSync(path.join(repository, relativePath), "utf8")).toBe(
+        fs.readFileSync(filepath, "utf8"),
+      );
     }
   });
 

@@ -45,7 +45,7 @@ describe("copy files", () => {
 
     expect((await readFile(input)).toString()).toBe("source content");
     await writeFile(Buffer.from("output content"), output);
-    expect(fs.readFileSync(output, "utf-8")).toBe("output content");
+    expect(fs.readFileSync(output, "utf8")).toBe("output content");
   });
 
   it("reports read and write failures", async () => {
@@ -76,7 +76,7 @@ describe("copy files", () => {
       input,
       output: path.join(outputDirectory, "input.txt"),
     });
-    expect(fs.readFileSync(copied.output, "utf-8")).toBe("source content");
+    expect(fs.readFileSync(copied.output, "utf8")).toBe("source content");
   });
 
   it("reports invalid copy-file inputs and destinations", async () => {
@@ -151,10 +151,10 @@ describe("copy files", () => {
       },
     ]);
     expect(
-      fs.readFileSync(path.join(outputDirectory, "first.txt"), "utf-8"),
+      fs.readFileSync(path.join(outputDirectory, "first.txt"), "utf8"),
     ).toBe("first");
     expect(
-      fs.readFileSync(path.join(outputDirectory, "last.txt"), "utf-8"),
+      fs.readFileSync(path.join(outputDirectory, "last.txt"), "utf8"),
     ).toBe("last");
   });
 

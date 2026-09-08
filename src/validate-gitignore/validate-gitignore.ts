@@ -5,6 +5,9 @@ import { MiniToolingError } from "../mini-tooling-error/mini-tooling-error";
 export const managedSectionComment =
   '# managed by @minifw/tooling - run "bunx @minifw/tooling sync" to update';
 
+/**
+ *
+ */
 export function getGitignoreFile(directory: string): {
   gitignoreInfo: string;
   gitignorePath: string;
@@ -24,7 +27,7 @@ export function getGitignoreFile(directory: string): {
 
   try {
     return {
-      gitignoreInfo: fs.readFileSync(gitignorePath, "utf-8"),
+      gitignoreInfo: fs.readFileSync(gitignorePath, "utf8"),
       gitignorePath,
     };
   } catch {
@@ -36,6 +39,9 @@ function normalizeEntry(entry: string): string {
   return entry.trim().replace(/^\.?(?:\/)+/, "");
 }
 
+/**
+ *
+ */
 export function getMissingGitignoreEntries(
   gitignoreInfo: string,
   managedFiles: string[],
@@ -52,6 +58,9 @@ export function getMissingGitignoreEntries(
   );
 }
 
+/**
+ *
+ */
 export function addGitignoreEntries(
   gitignoreInfo: string,
   entries: string[],
@@ -80,6 +89,9 @@ export function addGitignoreEntries(
   return lines.join("\n");
 }
 
+/**
+ *
+ */
 export function removeGitignoreEntries(
   gitignoreInfo: string,
   entries: readonly string[],
@@ -93,6 +105,9 @@ export function removeGitignoreEntries(
     .join("\n");
 }
 
+/**
+ *
+ */
 export function writeGitignoreFile(
   filepath: string,
   gitignoreInfo: string,
@@ -108,6 +123,9 @@ export interface ValidateGitignoreOptions {
   obsoleteEntries?: readonly string[];
 }
 
+/**
+ *
+ */
 export function validateGitignore(
   directory: string,
   managedFiles: string[],

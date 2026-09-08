@@ -74,7 +74,10 @@ const errorList = {
   ) => ({
     message: `Package validation failed: the package file "${filepath}" has a name of "${providedName}" with an invalid organization: "${organization}".\n\nThis tool is designed only for use with "@minifw/*" repositories.`,
   }),
-} as const satisfies Record<string, (...args: any[]) => MiniToolingErrorData>;
+} as const satisfies Record<
+  string,
+  (...arguments_: any[]) => MiniToolingErrorData
+>;
 
 export type MiniToolingErrorCode = keyof typeof errorList;
 
@@ -93,13 +96,13 @@ export class MiniToolingError<
 > extends Error {
   constructor(
     public readonly code: Code,
-    ...args: MiniToolingErrorArguments<Code>
+    ...arguments_: MiniToolingErrorArguments<Code>
   ) {
     const createError = errorList[code] as (
-      ...args: MiniToolingErrorArguments<Code>
+      ...arguments__: MiniToolingErrorArguments<Code>
     ) => MiniToolingErrorData;
 
-    const { message } = createError(...args);
+    const { message } = createError(...arguments_);
     super(message);
     this.name = "MiniToolingError";
   }
