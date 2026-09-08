@@ -49,9 +49,9 @@ describe("linkStaticFiles()", () => {
 
     await linkStaticFiles(outputDirectory, inputDirectory);
 
-    expect(fs.readFileSync(path.join(outputDirectory, "AGENTS.md"), "utf8")).toBe(
-      "shared\n",
-    );
+    expect(
+      fs.readFileSync(path.join(outputDirectory, "AGENTS.md"), "utf8"),
+    ).toBe("shared\n");
   });
 
   it("copies ignore files because Git does not support symbolic links for them", async () => {
