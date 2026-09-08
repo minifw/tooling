@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { createProgram } from "./cli";
+import { syncStaticFiles } from "./sync/sync";
 
 const temporaryDirectories: string[] = [];
 const staticDirectory = path.resolve(import.meta.dir, "../static");
@@ -87,6 +88,34 @@ describe("minifw-tooling sync", () => {
     }).parseAsync(["sync", "--root-dir", repository], { from: "user" });
 
     expect(exitCode).toBe(1);
+  });
+
+  it("checks static files without installing or copying", async () => {
+    const repository = createTemporaryDirectory();
+    fs.writeFileSync(
+      path.join(repository, "package.json"),
+      JSON.stringify({ name: "@minifw/example" }),
+    );
+    await syncStaticFiles(repository);
+    fs.writeFileSync(path.join(repository, "AGENTS.md"), "outdated\n");
+    let installed = false;
+
+    await createProgram({
+      ensureLocalTooling: async () => {
+        installed = true;
+      },
+      setExitCode: (code) => {
+        exitCode = code;
+      },
+    }).parseAsync(["sync", "--check", "--root-dir", repository], {
+      from: "user",
+    });
+
+    expect(installed).toBe(false);
+    expect(exitCode).toBe(1);
+    expect(fs.readFileSync(path.join(repository, "AGENTS.md"), "utf8")).toBe(
+      "outdated\n",
+    );
   });
 
   it("exits cleanly when repository validation fails before copying", async () => {

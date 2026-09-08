@@ -5,7 +5,11 @@ import chalk from "chalk";
 import ora from "ora";
 import { ensureLocalTooling } from "./ensure-local-tooling/ensure-local-tooling";
 import { prepareJsrConfig } from "./prepare-jsr/prepare-jsr";
-import { getManagedFilePaths, syncStaticFiles } from "./sync/sync";
+import {
+  checkStaticFiles,
+  getManagedFilePaths,
+  syncStaticFiles,
+} from "./sync/sync";
 import { MiniToolingError } from "./mini-tooling-error/mini-tooling-error";
 import { validateGitignore } from "./validate-gitignore/validate-gitignore";
 import { validatePackage } from "./validate-package/validate-package";
@@ -40,7 +44,8 @@ export function createProgram({
     .description("Synchronize package-managed files into a repository")
     .option("--root-dir <directory>", "repository directory", process.cwd())
     .option("--concurrency <count>", "simultaneous file copies", Number, 5)
-    .action(async ({ rootDir, concurrency }) => {
+    .option("--check", "check static files without installing or copying")
+    .action(async ({ check, rootDir, concurrency }) => {
       const rootDirectory = path.resolve(rootDir);
       const validationSpinner = ora("Validating repository...").start();
 
@@ -50,6 +55,22 @@ export function createProgram({
       } catch (error) {
         validationSpinner.fail("Repository validation failed.");
         throw error;
+      }
+
+      if (check) {
+        const outOfSyncFiles = await checkStaticFiles(rootDirectory);
+        if (outOfSyncFiles.length === 0) {
+          console.log("Static files are synchronized.");
+          return;
+        }
+
+        console.error(
+          chalk.red(
+            `Static files are out of sync:\n${outOfSyncFiles.map((filepath) => `- ${filepath}`).join("\n")}`,
+          ),
+        );
+        setExitCode(1);
+        return;
       }
 
       const installationSpinner = ora("Installing local tooling...").start();

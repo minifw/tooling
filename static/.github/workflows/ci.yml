@@ -17,7 +17,6 @@ jobs:
         with:
           bun-version: "1.4.0"
       - run: bun install --frozen-lockfile
-      - run: bunx @minifw/tooling sync
-      - run: git diff --exit-code
+      - run: bunx @minifw/tooling sync --check
       - run: bun run lint
       - run: bun run test:all

@@ -12,6 +12,10 @@ const staticDirectory: string = path.resolve(import.meta.dir, "../../static");
 /** Configures how static files are copied into a package repository. */
 export type SyncOptions = CopyFilesOptions;
 
+function isCheckedStaticFile(filepath: string): boolean {
+  return !filepath.startsWith(".husky/");
+}
+
 async function getStaticFiles(directory = staticDirectory): Promise<string[]> {
   const files = await fs.readdir(directory, { withFileTypes: true });
   const nestedFiles = await Promise.all(
@@ -36,6 +40,35 @@ export async function getManagedFilePaths(
   const files = await getStaticFiles(directory);
   return files.map((filepath) =>
     path.relative(directory, filepath).split(path.sep).join("/"),
+  );
+}
+
+/** Lists managed static files that must remain synchronized in Git. */
+export async function checkStaticFiles(
+  rootDirectory: string,
+): Promise<string[]> {
+  validatePackage(rootDirectory);
+
+  const inputs = await getStaticFiles();
+  const outOfSyncFiles = await Promise.all(
+    inputs.map(async (input) => {
+      const relativePath = path.relative(staticDirectory, input);
+      if (!isCheckedStaticFile(relativePath)) return;
+
+      try {
+        const [inputContents, outputContents] = await Promise.all([
+          fs.readFile(input),
+          fs.readFile(path.join(rootDirectory, relativePath)),
+        ]);
+        return inputContents.equals(outputContents) ? undefined : relativePath;
+      } catch {
+        return relativePath;
+      }
+    }),
+  );
+
+  return outOfSyncFiles.filter(
+    (filepath): filepath is string => filepath !== undefined,
   );
 }
 

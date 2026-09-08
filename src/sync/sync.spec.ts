@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { syncStaticFiles } from "./sync";
+import { checkStaticFiles, syncStaticFiles } from "./sync";
 import { MiniToolingErrors } from "../mini-tooling-error/mini-tooling-error";
 
 const temporaryDirectories: string[] = [];
@@ -62,5 +62,17 @@ describe("syncStaticFiles()", () => {
     await expect(syncStaticFiles(repository)).rejects.toMatchObject({
       code: MiniToolingErrors.PackValidInvalidPackageOrg,
     });
+  });
+
+  it("reports tracked static files that are missing or changed", async () => {
+    const repository = createRepository("@minifw/example");
+    await syncStaticFiles(repository);
+    fs.writeFileSync(path.join(repository, "AGENTS.md"), "outdated\n");
+    fs.rmSync(path.join(repository, "CLAUDE.md"));
+
+    expect(await checkStaticFiles(repository)).toEqual([
+      "AGENTS.md",
+      "CLAUDE.md",
+    ]);
   });
 });
