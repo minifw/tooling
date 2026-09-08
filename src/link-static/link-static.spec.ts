@@ -18,7 +18,7 @@ afterEach(() => {
 });
 
 describe("linkStaticFiles()", () => {
-  it("creates relative links for non-workflow static files and reuses matching links", async () => {
+  it("copies static files and refreshes matching root files", async () => {
     const inputDirectory = createTemporaryDirectory();
     const outputDirectory = createTemporaryDirectory();
     const input = path.join(inputDirectory, ".ai", "skill.md");
@@ -28,29 +28,30 @@ describe("linkStaticFiles()", () => {
     expect(await linkStaticFiles(outputDirectory, inputDirectory)).toEqual([
       ".ai/skill.md",
     ]);
-    expect(fs.realpathSync(path.join(outputDirectory, ".ai", "skill.md"))).toBe(
-      input,
-    );
+    const output = path.join(outputDirectory, ".ai", "skill.md");
+    expect(fs.lstatSync(output).isSymbolicLink()).toBe(false);
+    expect(fs.readFileSync(output, "utf8")).toBe("name: CI\n");
     expect(
       fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf8"),
-    ).toContain("/.ai/skill.md");
-    expect(
-      fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf8"),
-    ).not.toContain("\n.ai/skill.md\n");
+    ).not.toContain("/.ai/skill.md");
+    fs.writeFileSync(input, "name: Updated CI\n");
     expect(await linkStaticFiles(outputDirectory, inputDirectory)).toEqual([
       ".ai/skill.md",
     ]);
+    expect(fs.readFileSync(output, "utf8")).toBe("name: Updated CI\n");
   });
 
-  it("does not replace an existing non-symlink file", async () => {
+  it("replaces existing static file copies", async () => {
     const inputDirectory = createTemporaryDirectory();
     const outputDirectory = createTemporaryDirectory();
     fs.writeFileSync(path.join(inputDirectory, "AGENTS.md"), "shared\n");
     fs.writeFileSync(path.join(outputDirectory, "AGENTS.md"), "local\n");
 
-    await expect(
-      linkStaticFiles(outputDirectory, inputDirectory),
-    ).rejects.toThrow("Refusing to replace existing file");
+    await linkStaticFiles(outputDirectory, inputDirectory);
+
+    expect(fs.readFileSync(path.join(outputDirectory, "AGENTS.md"), "utf8")).toBe(
+      "shared\n",
+    );
   });
 
   it("copies ignore files because Git does not support symbolic links for them", async () => {

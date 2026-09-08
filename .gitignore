@@ -35,30 +35,4 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # managed by @minifw/tooling - run "bunx @minifw/tooling sync" to update
 jsr.json
-/AGENTS.md
-/.husky/_/post-commit
-/.husky/_/pre-rebase
-/.husky/_/post-checkout
-/.husky/_/h
-/.husky/_/applypatch-msg
-/.husky/_/post-merge
-/.husky/_/prepare-commit-msg
-/.husky/_/post-applypatch
-/.husky/_/pre-applypatch
-/.husky/_/pre-push
-/.husky/_/commit-msg
-/.husky/_/pre-auto-gc
-/.husky/_/pre-merge-commit
-/.husky/_/pre-commit
-/.husky/_/.gitignore
-/.husky/_/post-rewrite
-/.husky/_/husky.sh
-/.husky/pre-commit
-/CLAUDE.md
-/.ai/skills/testing/SKILL.md
-/.ai/skills/code-quality/SKILL.md
-/.ai/skills/architecture/SKILL.md
-/.ai/skills/build-release/SKILL.md
-/.ai/skills/jsdoc/SKILL.md
-/.editorconfig
-/LICENSE.md
+/.husky/**
