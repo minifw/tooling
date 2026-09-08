@@ -1,9 +1,7 @@
 {
   "extends": "@minifw/tooling/tsconfig",
   "compilerOptions": {
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "jsx": "react-jsx",
     "noUnusedLocals": false,
     "noUnusedParameters": false,

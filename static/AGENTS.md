@@ -26,10 +26,10 @@ settings.
 
 ## Skills
 
-| Skill                       | When to Use                                                                                            | Path                                                                   |
-| --------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| Architecture and public API | Changing package exports, public API boundaries, internal modules, or runtime boundaries.        | [.ai/skills/architecture/SKILL.md](.ai/skills/architecture/SKILL.md)   |
-| JSDoc and public docs       | Adding or revising exported APIs, overloads, types, examples, or API documentation.              | [.ai/skills/jsdoc/SKILL.md](.ai/skills/jsdoc/SKILL.md)                 |
-| Testing                     | Adding, changing, debugging, or reviewing Bun tests, integration suites, and test fixtures.      | [.ai/skills/testing/SKILL.md](.ai/skills/testing/SKILL.md)             |
+| Skill                       | When to Use                                                                                        | Path                                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Architecture and public API | Changing package exports, public API boundaries, internal modules, or runtime boundaries.          | [.ai/skills/architecture/SKILL.md](.ai/skills/architecture/SKILL.md)   |
+| JSDoc and public docs       | Adding or revising exported APIs, overloads, types, examples, or API documentation.                | [.ai/skills/jsdoc/SKILL.md](.ai/skills/jsdoc/SKILL.md)                 |
+| Testing                     | Adding, changing, debugging, or reviewing Bun tests, integration suites, and test fixtures.        | [.ai/skills/testing/SKILL.md](.ai/skills/testing/SKILL.md)             |
 | Linting and formatting      | Resolving ESLint, TypeScript, JSDoc, or Prettier findings, or changing code-quality configuration. | [.ai/skills/code-quality/SKILL.md](.ai/skills/code-quality/SKILL.md)   |
-| Build and release           | Changing build output, declarations, package metadata, exports, or preparing a release.           | [.ai/skills/build-release/SKILL.md](.ai/skills/build-release/SKILL.md) |
+| Build and release           | Changing build output, declarations, package metadata, exports, or preparing a release.            | [.ai/skills/build-release/SKILL.md](.ai/skills/build-release/SKILL.md) |

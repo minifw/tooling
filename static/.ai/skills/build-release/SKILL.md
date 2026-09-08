@@ -19,8 +19,8 @@ user-invocable: true
 
 ## Commands
 
-- Use the package scripts declared in `package.json` for build, typecheck,
-  lint, test, and release validation.
+- Use the package scripts declared in `package.json` for build, typecheck, lint,
+  test, and release validation.
 - Run `npm pack --dry-run` before an npm release to inspect the publishable
   contents.
 
@@ -29,6 +29,6 @@ user-invocable: true
 1. Update version and package metadata deliberately.
 2. Run the package's documented lint, typecheck, build, and test commands.
 3. Run `npm pack --dry-run`; verify the intended artifacts, `README.md`,
-  `LICENSE`, and package metadata would ship.
+   `LICENSE`, and package metadata would ship.
 4. Install the packed tarball in a clean consumer project and verify its public
-  entry points before publishing.
+   entry points before publishing.

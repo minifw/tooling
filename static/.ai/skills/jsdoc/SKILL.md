@@ -1,8 +1,8 @@
 ---
 name: jsdoc
 description:
-  "Use when: adding or changing exported functions, classes, interfaces,
-  types, overloads, examples, or API documentation."
+  "Use when: adding or changing exported functions, classes, interfaces, types,
+  overloads, examples, or API documentation."
 user-invocable: true
 ---
 

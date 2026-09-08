@@ -2,17 +2,17 @@ import { expect } from "bun:test";
 import { MiniToolingError, type MiniToolingErrors } from "./mini-tooling-error";
 
 export function expectError(
-	action: () => unknown,
-	code: keyof typeof MiniToolingErrors,
+  action: () => unknown,
+  code: keyof typeof MiniToolingErrors,
 ) {
-	let error: unknown;
+  let error: unknown;
 
-	try {
-		action();
-	} catch (caughtError) {
-		error = caughtError;
-	}
+  try {
+    action();
+  } catch (caughtError) {
+    error = caughtError;
+  }
 
-	expect(error).toBeInstanceOf(MiniToolingError);
-	expect(error).toMatchObject({ code });
+  expect(error).toBeInstanceOf(MiniToolingError);
+  expect(error).toMatchObject({ code });
 }

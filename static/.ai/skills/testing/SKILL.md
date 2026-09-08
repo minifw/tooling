@@ -1,8 +1,8 @@
 ---
 name: testing
 description:
-  "Use when: writing, updating, debugging, or reviewing Bun tests,
-  integration suites, end-to-end tests, or test fixtures."
+  "Use when: writing, updating, debugging, or reviewing Bun tests, integration
+  suites, end-to-end tests, or test fixtures."
 user-invocable: true
 ---
 
@@ -32,4 +32,4 @@ user-invocable: true
 2. Run the narrowest relevant test while iterating.
 3. Assert observable behavior rather than incidental implementation details.
 4. Run the package's required format, lint, typecheck, and full test validation
-  before completion.
+   before completion.

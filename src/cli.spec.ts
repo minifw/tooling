@@ -8,84 +8,87 @@ const temporaryDirectories: string[] = [];
 const staticDirectory = path.resolve(import.meta.dir, "../static");
 
 function getStaticFiles(directory = staticDirectory): string[] {
-	return fs.readdirSync(directory, { withFileTypes: true }).flatMap((file) => {
-		const filepath = path.join(directory, file.name);
-		if (file.isFile()) return [filepath];
-		if (file.isDirectory()) return getStaticFiles(filepath);
-		return [];
-	});
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((file) => {
+    const filepath = path.join(directory, file.name);
+    if (file.isFile()) return [filepath];
+    if (file.isDirectory()) return getStaticFiles(filepath);
+    return [];
+  });
 }
 
 function createTemporaryDirectory(): string {
-	const directory = fs.mkdtempSync(path.join(os.tmpdir(), "minifw-tooling-"));
-	temporaryDirectories.push(directory);
-	return directory;
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "minifw-tooling-"));
+  temporaryDirectories.push(directory);
+  return directory;
 }
 
 afterEach(() => {
-	for (const directory of temporaryDirectories.splice(0))
-		fs.rmSync(directory, { force: true, recursive: true });
+  for (const directory of temporaryDirectories.splice(0))
+    fs.rmSync(directory, { force: true, recursive: true });
 });
 
 describe("minifw-tooling sync", () => {
-	it("synchronizes static files through the CLI", async () => {
-		const repository = createTemporaryDirectory();
-		const installedDirectories: string[] = [];
-		fs.writeFileSync(
-			path.join(repository, "package.json"),
-			JSON.stringify({ name: "@minifw/example" }),
-		);
+  it("synchronizes static files through the CLI", async () => {
+    const repository = createTemporaryDirectory();
+    const installedDirectories: string[] = [];
+    fs.writeFileSync(
+      path.join(repository, "package.json"),
+      JSON.stringify({ name: "@minifw/example" }),
+    );
 
-		await createProgram({
-			ensureLocalTooling: async (directory) => {
-				installedDirectories.push(directory);
-			},
-		}).parseAsync(
-			["sync", "--root-dir", repository, "--concurrency", "1"],
-			{ from: "user" },
-		);
+    await createProgram({
+      ensureLocalTooling: async (directory) => {
+        installedDirectories.push(directory);
+      },
+    }).parseAsync(["sync", "--root-dir", repository, "--concurrency", "1"], {
+      from: "user",
+    });
 
-		const staticFiles = getStaticFiles();
-		expect(installedDirectories).toEqual([repository]);
-		expect(fs.existsSync(path.join(repository, "eslint.config.ts"))).toBe(false);
-		expect(fs.existsSync(path.join(repository, "prettier.config.ts"))).toBe(false);
-		for (const filepath of staticFiles) {
-			const relativePath = path.relative(staticDirectory, filepath);
-			expect(
-				fs.readFileSync(path.join(repository, relativePath), "utf-8"),
-			).toBe(fs.readFileSync(filepath, "utf-8"));
-		}
-	});
+    const staticFiles = getStaticFiles();
+    expect(installedDirectories).toEqual([repository]);
+    expect(fs.existsSync(path.join(repository, "eslint.config.ts"))).toBe(
+      false,
+    );
+    expect(fs.existsSync(path.join(repository, "prettier.config.ts"))).toBe(
+      false,
+    );
+    for (const filepath of staticFiles) {
+      const relativePath = path.relative(staticDirectory, filepath);
+      expect(
+        fs.readFileSync(path.join(repository, relativePath), "utf-8"),
+      ).toBe(fs.readFileSync(filepath, "utf-8"));
+    }
+  });
 
-	it("reports every file that fails to synchronize", async () => {
-		const repository = createTemporaryDirectory();
-		fs.writeFileSync(
-			path.join(repository, "package.json"),
-			JSON.stringify({ name: "@minifw/example" }),
-		);
-		fs.mkdirSync(path.join(repository, "AGENTS.md"));
-		fs.mkdirSync(path.join(repository, "eslint.config.ts"));
+  it("reports every file that fails to synchronize", async () => {
+    const repository = createTemporaryDirectory();
+    fs.writeFileSync(
+      path.join(repository, "package.json"),
+      JSON.stringify({ name: "@minifw/example" }),
+    );
+    fs.mkdirSync(path.join(repository, "AGENTS.md"));
+    fs.mkdirSync(path.join(repository, "eslint.config.ts"));
 
-		await createProgram({ ensureLocalTooling: async () => {} }).parseAsync(
-			["sync", "--root-dir", repository],
-			{ from: "user" },
-		);
+    await createProgram({ ensureLocalTooling: async () => {} }).parseAsync(
+      ["sync", "--root-dir", repository],
+      { from: "user" },
+    );
 
-		expect(process.exitCode).toBe(1);
-		process.exitCode = undefined;
-	});
+    expect(process.exitCode).toBe(1);
+    process.exitCode = undefined;
+  });
 
-	it("exits cleanly when repository validation fails before copying", async () => {
-		const repository = createTemporaryDirectory();
-		fs.writeFileSync(
-			path.join(repository, "package.json"),
-			JSON.stringify({ name: "example" }),
-		);
+  it("exits cleanly when repository validation fails before copying", async () => {
+    const repository = createTemporaryDirectory();
+    fs.writeFileSync(
+      path.join(repository, "package.json"),
+      JSON.stringify({ name: "example" }),
+    );
 
-		await expect(
-			createProgram().parseAsync(["sync", "--root-dir", repository], {
-				from: "user",
-			}),
-		).rejects.toMatchObject({ code: "PackValidNoPackageOrg" });
-	});
+    await expect(
+      createProgram().parseAsync(["sync", "--root-dir", repository], {
+        from: "user",
+      }),
+    ).rejects.toMatchObject({ code: "PackValidNoPackageOrg" });
+  });
 });
