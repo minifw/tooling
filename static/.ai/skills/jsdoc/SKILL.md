@@ -31,6 +31,6 @@ documentation.
 2. Document only the public contract, not obvious implementation mechanics.
 3. Ensure documented option names match the actual types and overloads.
 4. Run `bun run lint:fix` to apply ESLint and Prettier's deterministic
-   formatting.
+   formatting; do not invoke either underlying tool directly.
 5. Because JSDoc changes do not modify TypeScript source, no test or build run
    is required unless the task also changes a `.ts` file.

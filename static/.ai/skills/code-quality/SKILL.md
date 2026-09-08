@@ -25,15 +25,20 @@ user-invocable: true
 
 ## Commands
 
-- Inspect `package.json` for the repository's lint, format, typecheck, and test
-  commands before validation.
+Every `@minifw/<package>` repository provides these scripts. Run them with
+`bun run`; do not invoke their underlying tools directly.
+
+- `bun run lint`: check Prettier and ESLint.
+- `bun run lint:fix`: apply deterministic Prettier and ESLint fixes.
+- `bun run test:types`: type-check the package.
+- `bun run test:unit`: run `*.spec.ts` tests except `*.e2e.spec.ts`.
+- `bun run test:e2e`: run `*.e2e.spec.ts` tests.
 
 ## Required Validation
 
-- After a source or configuration change, run the package's relevant format,
-  lint, typecheck, and test scripts.
-- After a documentation-only change, run the package's formatter when one is
-  available.
+- After a source or configuration change, run `bun run lint:fix` and the
+  relevant `test:types`, `test:unit`, and `test:e2e` scripts.
+- After a documentation-only change, run `bun run lint:fix`.
 - Apply deterministic formatter and lint fixes before reporting remaining
   findings.
 

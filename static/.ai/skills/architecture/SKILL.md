@@ -35,5 +35,6 @@ user-invocable: true
 1. Identify the affected public contract and the owning module.
 2. Review the current exports and nearest tests for compatibility constraints.
 3. Update focused tests for observable behavioral changes.
-4. Run the narrowest relevant validation command from `package.json`.
+4. Run the relevant `bun run test:unit` or `bun run test:e2e` command; do not
+   invoke the underlying test runner directly.
 5. Follow the validation procedure in the code-quality skill.

@@ -11,9 +11,10 @@ user-invocable: true
 ## Test Layout
 
 - Follow the package's established test layout, file suffixes, and test runner.
+- Name unit and integration tests `*.spec.ts`; name end-to-end tests
+  `*.e2e.spec.ts`.
 - Keep unit tests near the behavior they cover when that matches the local
   convention; use fixtures for integration scenarios that require real files.
-- Inspect `package.json` to identify focused and full test commands.
 
 ## What to Test
 
@@ -29,7 +30,8 @@ user-invocable: true
 ## Procedure
 
 1. Add or update the nearest appropriate test.
-2. Run the narrowest relevant test while iterating.
+2. Run `bun run test:unit` for unit and integration suites or `bun run test:e2e`
+   for end-to-end suites; do not invoke `bun test` directly.
 3. Assert observable behavior rather than incidental implementation details.
-4. Run the package's required format, lint, typecheck, and full test validation
-   before completion.
+4. Finish with `bun run lint:fix`, `bun run test:types`, `bun run test:unit`,
+   and `bun run test:e2e` as applicable.
