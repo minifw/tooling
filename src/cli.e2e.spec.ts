@@ -6,6 +6,7 @@ import { createProgram } from "./cli";
 
 const temporaryDirectories: string[] = [];
 const staticDirectory = path.resolve(import.meta.dir, "../static");
+let exitCode: number | undefined;
 
 function getStaticFiles(directory = staticDirectory): string[] {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((file) => {
@@ -25,6 +26,7 @@ function createTemporaryDirectory(): string {
 afterEach(() => {
   for (const directory of temporaryDirectories.splice(0))
     fs.rmSync(directory, { force: true, recursive: true });
+  exitCode = undefined;
 });
 
 describe("minifw-tooling sync", () => {
@@ -69,13 +71,14 @@ describe("minifw-tooling sync", () => {
     fs.mkdirSync(path.join(repository, "AGENTS.md"));
     fs.mkdirSync(path.join(repository, "eslint.config.ts"));
 
-    await createProgram({ ensureLocalTooling: async () => {} }).parseAsync(
-      ["sync", "--root-dir", repository],
-      { from: "user" },
-    );
+    await createProgram({
+      ensureLocalTooling: async () => {},
+      setExitCode: (code) => {
+        exitCode = code;
+      },
+    }).parseAsync(["sync", "--root-dir", repository], { from: "user" });
 
-    expect(process.exitCode).toBe(1);
-    process.exitCode = undefined;
+    expect(exitCode).toBe(1);
   });
 
   it("exits cleanly when repository validation fails before copying", async () => {
@@ -90,5 +93,36 @@ describe("minifw-tooling sync", () => {
         from: "user",
       }),
     ).rejects.toMatchObject({ code: "PackValidNoPackageOrg" });
+  });
+});
+
+describe("minifw-tooling prepare", () => {
+  it("generates JSR configuration through the CLI", async () => {
+    const repository = createTemporaryDirectory();
+    fs.writeFileSync(
+      path.join(repository, "package.json"),
+      JSON.stringify({
+        name: "@minifw/example",
+        version: "1.2.3",
+        exports: { ".": "./src/index.ts" },
+        minifwTooling: {
+          jsr: {
+            publish: { include: ["src/**/*.ts"], exclude: ["**/*.spec.ts"] },
+          },
+        },
+      }),
+    );
+
+    await createProgram().parseAsync(["prepare", "--root-dir", repository], {
+      from: "user",
+    });
+
+    expect(
+      JSON.parse(fs.readFileSync(path.join(repository, "jsr.json"), "utf8")),
+    ).toMatchObject({
+      name: "@minifw/example",
+      version: "1.2.3",
+      exports: { ".": "./src/index.ts" },
+    });
   });
 });

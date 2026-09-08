@@ -4,6 +4,7 @@ import { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
 import { ensureLocalTooling } from "./ensure-local-tooling/ensure-local-tooling";
+import { prepareJsrConfig } from "./prepare-jsr/prepare-jsr";
 import { getManagedFilePaths, syncStaticFiles } from "./sync/sync";
 import { MiniToolingError } from "./mini-tooling-error/mini-tooling-error";
 import { validateGitignore } from "./validate-gitignore/validate-gitignore";
@@ -15,11 +16,17 @@ function getErrorMessage(error: unknown): string {
 
 export interface CliDependencies {
   ensureLocalTooling?: typeof ensureLocalTooling;
+  prepareJsrConfig?: typeof prepareJsrConfig;
+  setExitCode?(code: number): void;
 }
 
 /** Creates the command-line program for synchronizing package-managed files. */
 export function createProgram({
   ensureLocalTooling: installLocalTooling = ensureLocalTooling,
+  prepareJsrConfig: prepareJsr = prepareJsrConfig,
+  setExitCode = (code) => {
+    process.exitCode = code;
+  },
 }: CliDependencies = {}): Command {
   const program = new Command();
 
@@ -113,7 +120,23 @@ export function createProgram({
         console.error(
           `${chalk.red("-")} ${path.basename(failure.output)}: ${getErrorMessage(failure.error)}`,
         );
-      process.exitCode = 1;
+      setExitCode(1);
+    });
+
+  program
+    .command("prepare")
+    .description("Generate the JSR configuration for a repository")
+    .option("--root-dir <directory>", "repository directory", process.cwd())
+    .action(({ rootDir }) => {
+      const spinner = ora("Preparing JSR configuration...").start();
+
+      try {
+        const { jsrPath } = prepareJsr(path.resolve(rootDir));
+        spinner.succeed(`Prepared ${path.basename(jsrPath)}.`);
+      } catch (error) {
+        spinner.fail("JSR configuration preparation failed.");
+        throw error;
+      }
     });
 
   return program;

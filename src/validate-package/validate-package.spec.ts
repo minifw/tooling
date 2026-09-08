@@ -121,7 +121,7 @@ describe("validatePackage()", () => {
     );
   });
 
-  it("functions end-to-end", () => {
+  it("validates a repository package manifest", () => {
     const unscopedPackageDirectory = createTemporaryPackageDirectory({
       name: "example",
     });

@@ -36,6 +36,15 @@ const errorList = {
   LocalToolingInstallFailed: (directory: string) => ({
     message: `Local tooling installation failed in "${directory}".`,
   }),
+  JsrPrepareInvalidMetadata: (filepath: string) => ({
+    message: `JSR preparation failed: "${filepath}" must define minifwTooling.jsr.publish.include and minifwTooling.jsr.publish.exclude as string arrays.`,
+  }),
+  JsrPrepareInvalidExports: (filepath: string) => ({
+    message: `JSR preparation failed: "${filepath}" must define exports as a map of string export paths to string source paths.`,
+  }),
+  JsrPrepareCannotWriteFile: (filepath: string) => ({
+    message: `JSR preparation failed: could not write "${filepath}".`,
+  }),
   PackValidNoDir: (filepath: string) => ({
     message: `Package validation failed: directory "${filepath}" could not be found.`,
   }),
