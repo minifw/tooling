@@ -80,6 +80,19 @@ export function addGitignoreEntries(
 	return lines.join("\n");
 }
 
+export function removeGitignoreEntries(
+	gitignoreInfo: string,
+	entries: readonly string[],
+): string {
+	if (entries.length === 0) return gitignoreInfo;
+
+	const normalizedEntries = new Set(entries.map(normalizeEntry));
+	return gitignoreInfo
+		.split(/\r?\n/)
+		.filter((line) => !normalizedEntries.has(normalizeEntry(line)))
+		.join("\n");
+}
+
 export function writeGitignoreFile(
 	filepath: string,
 	gitignoreInfo: string,
@@ -91,18 +104,27 @@ export function writeGitignoreFile(
 	}
 }
 
+export interface ValidateGitignoreOptions {
+	obsoleteEntries?: readonly string[];
+}
+
 export function validateGitignore(
 	directory: string,
 	managedFiles: string[],
-): { addedEntries: string[]; gitignorePath: string } {
+	{ obsoleteEntries = [] }: ValidateGitignoreOptions = {},
+): { addedEntries: string[]; gitignorePath: string; removedEntries: string[] } {
 	const { gitignoreInfo, gitignorePath } = getGitignoreFile(directory);
-	const addedEntries = getMissingGitignoreEntries(gitignoreInfo, managedFiles);
+	const existingEntries = new Set(
+		gitignoreInfo.split(/\r?\n/).map(normalizeEntry),
+	);
+	const updatedInfo = removeGitignoreEntries(gitignoreInfo, obsoleteEntries);
+	const removedEntries = obsoleteEntries.filter(
+		(entry) => existingEntries.has(normalizeEntry(entry)),
+	);
+	const addedEntries = getMissingGitignoreEntries(updatedInfo, managedFiles);
+	const finalInfo = addGitignoreEntries(updatedInfo, addedEntries);
 
-	if (addedEntries.length > 0)
-		writeGitignoreFile(
-			gitignorePath,
-			addGitignoreEntries(gitignoreInfo, addedEntries),
-		);
+	if (finalInfo !== gitignoreInfo) writeGitignoreFile(gitignorePath, finalInfo);
 
-	return { addedEntries, gitignorePath };
+	return { addedEntries, gitignorePath, removedEntries };
 }

@@ -7,6 +7,7 @@ import {
 	getGitignoreFile,
 	getMissingGitignoreEntries,
 	managedSectionComment,
+	removeGitignoreEntries,
 	validateGitignore,
 	writeGitignoreFile,
 } from "./validate-gitignore";
@@ -92,6 +93,17 @@ describe("validateGitignore()", () => {
 		);
 	});
 
+	it("removes paths that are no longer tooling-managed", () => {
+		const gitignoreInfo = `${managedSectionComment}\nAGENTS.md\neslint.config.ts\nprettier.config.ts\n`;
+
+		expect(
+			removeGitignoreEntries(gitignoreInfo, [
+				"eslint.config.ts",
+				"prettier.config.ts",
+			]),
+		).toBe(`${managedSectionComment}\nAGENTS.md\n`);
+	});
+
 	it("creates and updates gitignore files with only missing managed entries", () => {
 		const directory = createTemporaryDirectory();
 
@@ -104,5 +116,19 @@ describe("validateGitignore()", () => {
 		expect(fs.readFileSync(path.join(directory, ".gitignore"), "utf-8")).toBe(
 			`${managedSectionComment}\n${managedFiles.join("\n")}\n`,
 		);
+	});
+
+	it("removes obsolete entries while adding currently managed files", () => {
+		const directory = createTemporaryDirectory();
+		fs.writeFileSync(path.join(directory, ".gitignore"), "eslint.config.ts\n");
+
+		expect(
+			validateGitignore(directory, ["AGENTS.md"], {
+				obsoleteEntries: ["eslint.config.ts"],
+			}),
+		).toMatchObject({
+			addedEntries: ["AGENTS.md"],
+			removedEntries: ["eslint.config.ts"],
+		});
 	});
 });

@@ -3,6 +3,7 @@ import path from "node:path";
 import { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
+import { ensureLocalTooling } from "./ensure-local-tooling/ensure-local-tooling";
 import { getManagedFilePaths, syncStaticFiles } from "./sync/sync";
 import { MiniToolingError } from "./mini-tooling-error/mini-tooling-error";
 import { validateGitignore } from "./validate-gitignore/validate-gitignore";
@@ -16,7 +17,13 @@ function getErrorMessage(error: unknown): string {
 	return error instanceof Error ? error.message : String(error);
 }
 
-export function createProgram(): Command {
+export interface CliDependencies {
+	ensureLocalTooling?: typeof ensureLocalTooling;
+}
+
+export function createProgram({
+	ensureLocalTooling: installLocalTooling = ensureLocalTooling,
+}: CliDependencies = {}): Command {
 	const program = new Command();
 
 	program
@@ -42,6 +49,16 @@ export function createProgram(): Command {
 				validationSpinner.succeed("Validated repository.");
 			} catch (error) {
 				validationSpinner.fail("Repository validation failed.");
+				throw error;
+			}
+
+			const installationSpinner = ora("Installing local tooling...").start();
+
+			try {
+				await installLocalTooling(rootDirectory);
+				installationSpinner.succeed("Installed local tooling.");
+			} catch (error) {
+				installationSpinner.fail("Local tooling installation failed.");
 				throw error;
 			}
 
@@ -78,6 +95,13 @@ export function createProgram(): Command {
 					const { addedEntries } = validateGitignore(
 						rootDirectory,
 						await getManagedFilePaths(),
+						{
+							obsoleteEntries: [
+								"eslint.config.ts",
+								"prettier.config.ts",
+								"tsconfig.json",
+							],
+						},
 					);
 					gitignoreSpinner.succeed(
 						addedEntries.length > 0

@@ -25,9 +25,11 @@ async function getStaticFiles(directory = staticDirectory): Promise<string[]> {
 	return nestedFiles.flat();
 }
 
-export async function getManagedFilePaths(): Promise<string[]> {
-	return (await getStaticFiles()).map((filepath) =>
-		path.relative(staticDirectory, filepath).split(path.sep).join("/"),
+export async function getManagedFilePaths(
+	directory = staticDirectory,
+): Promise<string[]> {
+	return (await getStaticFiles(directory)).map((filepath) =>
+		path.relative(directory, filepath).split(path.sep).join("/"),
 	);
 }
 

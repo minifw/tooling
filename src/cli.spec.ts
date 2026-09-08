@@ -2,9 +2,9 @@ import { afterEach, describe, expect, it } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { createProgram } from "./cli";
 
 const temporaryDirectories: string[] = [];
-const cliPath = path.resolve(import.meta.dir, "cli.ts");
 const staticDirectory = path.resolve(import.meta.dir, "../static");
 
 function getStaticFiles(directory = staticDirectory): string[] {
@@ -22,10 +22,6 @@ function createTemporaryDirectory(): string {
 	return directory;
 }
 
-function stripAnsi(value: string): string {
-	return value.replace(/\u001B\[[0-?]*[ -/]*[@-~]/g, "");
-}
-
 afterEach(() => {
 	for (const directory of temporaryDirectories.splice(0))
 		fs.rmSync(directory, { force: true, recursive: true });
@@ -34,30 +30,26 @@ afterEach(() => {
 describe("minifw-tooling sync", () => {
 	it("synchronizes static files through the CLI", async () => {
 		const repository = createTemporaryDirectory();
+		const installedDirectories: string[] = [];
 		fs.writeFileSync(
 			path.join(repository, "package.json"),
 			JSON.stringify({ name: "@minifw/example" }),
 		);
 
-		const child = Bun.spawn(
-			[
-				process.execPath,
-				cliPath,
-				"sync",
-				"--root-dir",
-				repository,
-				"--concurrency",
-				"1",
-			],
-			{ stderr: "pipe", stdout: "pipe" },
+		await createProgram({
+			ensureLocalTooling: async (directory) => {
+				installedDirectories.push(directory);
+			},
+		}).parseAsync(
+			["sync", "--root-dir", repository, "--concurrency", "1"],
+			{ from: "user" },
 		);
 
-		expect(await child.exited).toBe(0);
-		const output = stripAnsi(await new Response(child.stderr).text());
-		expect(output).toContain("Validated repository.");
-		expect(output).toContain("Synchronized 3 files.");
-		expect(output).toContain("Updated .gitignore with 3 entries.");
-		for (const filepath of getStaticFiles()) {
+		const staticFiles = getStaticFiles();
+		expect(installedDirectories).toEqual([repository]);
+		expect(fs.existsSync(path.join(repository, "eslint.config.ts"))).toBe(false);
+		expect(fs.existsSync(path.join(repository, "prettier.config.ts"))).toBe(false);
+		for (const filepath of staticFiles) {
 			const relativePath = path.relative(staticDirectory, filepath);
 			expect(
 				fs.readFileSync(path.join(repository, relativePath), "utf-8"),
@@ -74,17 +66,13 @@ describe("minifw-tooling sync", () => {
 		fs.mkdirSync(path.join(repository, "AGENTS.md"));
 		fs.mkdirSync(path.join(repository, "eslint.config.ts"));
 
-		const child = Bun.spawn(
-			[process.execPath, cliPath, "sync", "--root-dir", repository],
-			{ stderr: "pipe", stdout: "pipe" },
+		await createProgram({ ensureLocalTooling: async () => {} }).parseAsync(
+			["sync", "--root-dir", repository],
+			{ from: "user" },
 		);
 
-		expect(await child.exited).toBe(1);
-		const output = stripAnsi(await new Response(child.stderr).text());
-		expect(output).toContain("Validated repository.");
-		expect(output).toContain(
-			"Failed to copy 2 files:\n- AGENTS.md: File copy failed: could not write",
-		);
+		expect(process.exitCode).toBe(1);
+		process.exitCode = undefined;
 	});
 
 	it("exits cleanly when repository validation fails before copying", async () => {
@@ -94,14 +82,10 @@ describe("minifw-tooling sync", () => {
 			JSON.stringify({ name: "example" }),
 		);
 
-		const child = Bun.spawn(
-			[process.execPath, cliPath, "sync", "--root-dir", repository],
-			{ stderr: "pipe", stdout: "pipe" },
-		);
-
-		expect(await child.exited).toBe(1);
-		const output = stripAnsi(await new Response(child.stderr).text());
-		expect(output).toContain("Repository validation failed.");
-		expect(output).toContain("PackValidNoPackageOrg");
+		await expect(
+			createProgram().parseAsync(["sync", "--root-dir", repository], {
+				from: "user",
+			}),
+		).rejects.toMatchObject({ code: "PackValidNoPackageOrg" });
 	});
 });

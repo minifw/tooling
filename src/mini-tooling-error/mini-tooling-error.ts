@@ -33,6 +33,9 @@ const errorList = {
 	CopyFilesInvalidConcurrency: (concurrency: number) => ({
 		message: `File copy failed: concurrency must be a positive integer, received "${concurrency}".`,
 	}),
+	LocalToolingInstallFailed: (directory: string) => ({
+		message: `Local tooling installation failed in "${directory}".`,
+	}),
 	PackValidNoDir: (filepath: string) => ({
 		message: `Package validation failed: directory "${filepath}" could not be found.`,
 	}),
