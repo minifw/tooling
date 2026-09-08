@@ -54,6 +54,14 @@ describe("minifw-tooling sync", () => {
     expect(fs.existsSync(path.join(repository, "prettier.config.ts"))).toBe(
       false,
     );
+    const gitignore = fs.readFileSync(
+      path.join(repository, ".gitignore"),
+      "utf8",
+    );
+    expect(gitignore).toContain("/jsr.json");
+    expect(gitignore).toContain("/.husky/**");
+    expect(gitignore).not.toContain("/AGENTS.md");
+    expect(gitignore).not.toContain("/.github/workflows/ci.yml");
     for (const filepath of staticFiles) {
       const relativePath = path.relative(staticDirectory, filepath);
       expect(fs.readFileSync(path.join(repository, relativePath), "utf8")).toBe(

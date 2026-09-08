@@ -92,11 +92,14 @@ export function createProgram({
         const gitignoreSpinner = ora("Validating .gitignore...").start();
 
         try {
+          const managedFilePaths = await getManagedFilePaths();
           const { addedEntries } = validateGitignore(
             rootDirectory,
-            await getManagedFilePaths(),
+            ["/jsr.json", "/.husky/**"],
             {
               obsoleteEntries: [
+                ...managedFilePaths,
+                ...managedFilePaths.map((filepath) => `/${filepath}`),
                 "eslint.config.ts",
                 "prettier.config.ts",
                 "tsconfig.json",
@@ -105,7 +108,7 @@ export function createProgram({
           );
           gitignoreSpinner.succeed(
             addedEntries.length > 0
-              ? `Updated .gitignore with ${addedEntries.length} entries.`
+              ? `Updated generated-file ignores with ${addedEntries.length} entries.`
               : "Validated .gitignore.",
           );
           return;
