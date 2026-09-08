@@ -34,6 +34,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .DS_Store
 
 # managed by @minifw/tooling - run "bunx @minifw/tooling sync" to update
+jsr.json
 /AGENTS.md
 /.husky/_/post-commit
 /.husky/_/pre-rebase
@@ -60,8 +61,4 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 /.ai/skills/build-release/SKILL.md
 /.ai/skills/jsdoc/SKILL.md
 /.editorconfig
-/.github/workflows/publish-npm.yml
-/.github/workflows/publish-jsr.yml
-/.github/workflows/ci.yml
 /LICENSE.md
-jsr.json

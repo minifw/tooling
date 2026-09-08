@@ -18,27 +18,27 @@ afterEach(() => {
 });
 
 describe("linkStaticFiles()", () => {
-  it("creates relative links for nested static files and reuses matching links", async () => {
+  it("creates relative links for non-workflow static files and reuses matching links", async () => {
     const inputDirectory = createTemporaryDirectory();
     const outputDirectory = createTemporaryDirectory();
-    const input = path.join(inputDirectory, ".github", "workflow.yml");
+    const input = path.join(inputDirectory, ".ai", "skill.md");
     fs.mkdirSync(path.dirname(input), { recursive: true });
     fs.writeFileSync(input, "name: CI\n");
 
     expect(await linkStaticFiles(outputDirectory, inputDirectory)).toEqual([
-      ".github/workflow.yml",
+      ".ai/skill.md",
     ]);
-    expect(
-      fs.realpathSync(path.join(outputDirectory, ".github", "workflow.yml")),
-    ).toBe(input);
-    expect(
-      fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf8"),
-    ).toContain("/.github/workflow.yml");
+    expect(fs.realpathSync(path.join(outputDirectory, ".ai", "skill.md"))).toBe(
+      input,
+    );
     expect(
       fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf8"),
-    ).not.toContain("\n.github/workflow.yml\n");
+    ).toContain("/.ai/skill.md");
+    expect(
+      fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf8"),
+    ).not.toContain("\n.ai/skill.md\n");
     expect(await linkStaticFiles(outputDirectory, inputDirectory)).toEqual([
-      ".github/workflow.yml",
+      ".ai/skill.md",
     ]);
   });
 
@@ -68,5 +68,26 @@ describe("linkStaticFiles()", () => {
     fs.writeFileSync(output, "outdated\n");
     await linkStaticFiles(outputDirectory, inputDirectory);
     expect(fs.readFileSync(output, "utf8")).toBe("*\n");
+  });
+
+  it("copies GitHub workflows so Actions can load tracked workflow files", async () => {
+    const inputDirectory = createTemporaryDirectory();
+    const outputDirectory = createTemporaryDirectory();
+    const input = path.join(inputDirectory, ".github", "workflows", "ci.yml");
+    const output = path.join(outputDirectory, ".github", "workflows", "ci.yml");
+    fs.mkdirSync(path.dirname(input), { recursive: true });
+    fs.writeFileSync(input, "name: CI\n");
+    fs.writeFileSync(path.join(inputDirectory, "AGENTS.md"), "shared\n");
+
+    await linkStaticFiles(outputDirectory, inputDirectory);
+
+    expect(fs.lstatSync(output).isSymbolicLink()).toBe(false);
+    expect(fs.readFileSync(output, "utf8")).toBe("name: CI\n");
+    expect(
+      fs.readFileSync(path.join(outputDirectory, ".gitignore"), "utf8"),
+    ).not.toContain("/.github/workflows/ci.yml");
+    fs.writeFileSync(input, "name: Updated CI\n");
+    await linkStaticFiles(outputDirectory, inputDirectory);
+    expect(fs.readFileSync(output, "utf8")).toBe("name: Updated CI\n");
   });
 });

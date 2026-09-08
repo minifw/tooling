@@ -7,6 +7,13 @@ import { validateGitignore } from "../validate-gitignore/validate-gitignore";
 const staticDirectory = path.resolve(import.meta.dir, "../../static");
 const rootDirectory = path.resolve(import.meta.dir, "../..");
 
+function shouldCopyFile(relativePath: string): boolean {
+  return (
+    path.basename(relativePath) === ".gitignore" ||
+    relativePath.startsWith(".github/workflows/")
+  );
+}
+
 async function getStaticFiles(directory: string): Promise<string[]> {
   const entries = await fs.readdir(directory, { withFileTypes: true });
   const nestedFiles = await Promise.all(
@@ -38,7 +45,7 @@ export async function linkStaticFiles(
     const target = path.relative(path.dirname(output), input);
 
     await fs.mkdir(path.dirname(output), { recursive: true });
-    if (path.basename(output) === ".gitignore") {
+    if (shouldCopyFile(relativePath)) {
       try {
         const stats = await fs.lstat(output);
         if (stats.isSymbolicLink()) await fs.unlink(output);
@@ -70,10 +77,20 @@ export async function linkStaticFiles(
   }
 
   const managedPaths = await getManagedFilePaths(inputDirectory);
+  const workflowPaths = managedPaths.filter((filepath) =>
+    filepath.startsWith(".github/workflows/"),
+  );
   validateGitignore(
     outputDirectory,
-    managedPaths.map((filepath) => `/${filepath}`),
-    { obsoleteEntries: managedPaths },
+    managedPaths
+      .filter((filepath) => !workflowPaths.includes(filepath))
+      .map((filepath) => `/${filepath}`),
+    {
+      obsoleteEntries: [
+        ...managedPaths,
+        ...workflowPaths.map((filepath) => `/${filepath}`),
+      ],
+    },
   );
   return linkedFiles;
 }
