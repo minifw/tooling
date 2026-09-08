@@ -5,9 +5,7 @@ import {
   MiniToolingErrors,
 } from "../mini-tooling-error/mini-tooling-error";
 
-/**
- *
- */
+/** Reads the package.json file from a repository directory. */
 export function getPackageFile(directory: string): {
   packageInfo: string;
   packagePath: string;
@@ -39,9 +37,7 @@ export function getPackageFile(directory: string): {
   }
 }
 
-/**
- *
- */
+/** Extracts a string package name from package.json content. */
 export function getPackageName(packageInfo: string, filepath: string): string {
   let parsed: unknown;
 
@@ -67,9 +63,7 @@ export function getPackageName(packageInfo: string, filepath: string): string {
   return parsed.name;
 }
 
-/**
- *
- */
+/** Extracts the scope owner from a scoped package name. */
 export function getPackageOwner(name: string, filepath: string): string {
   const parts = name.split("/").filter(Boolean);
   if (parts.length < 2)
@@ -89,9 +83,7 @@ export function getPackageOwner(name: string, filepath: string): string {
   return org;
 }
 
-/**
- *
- */
+/** Verifies that a repository has a valid package.json under the @minifw scope. */
 export function validatePackage(repoRoot: string): boolean {
   const { packageInfo, packagePath } = getPackageFile(repoRoot);
 

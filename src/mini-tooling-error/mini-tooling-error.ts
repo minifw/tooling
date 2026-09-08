@@ -76,7 +76,7 @@ const errorList = {
   }),
 } as const satisfies Record<
   string,
-  (...arguments_: any[]) => MiniToolingErrorData
+  (...arguments_: never[]) => MiniToolingErrorData
 >;
 
 export type MiniToolingErrorCode = keyof typeof errorList;

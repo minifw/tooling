@@ -9,7 +9,7 @@ import { validatePackage } from "../validate-package/validate-package";
 
 const staticDirectory = path.resolve(import.meta.dir, "../../static");
 
-export interface SyncOptions extends CopyFilesOptions {}
+export type SyncOptions = CopyFilesOptions;
 
 async function getStaticFiles(directory = staticDirectory): Promise<string[]> {
   const files = await fs.readdir(directory, { withFileTypes: true });
@@ -25,14 +25,20 @@ async function getStaticFiles(directory = staticDirectory): Promise<string[]> {
   return nestedFiles.flat();
 }
 
+/**
+ * Lists paths managed by static assets, relative to the supplied static
+ * directory.
+ */
 export async function getManagedFilePaths(
   directory = staticDirectory,
 ): Promise<string[]> {
-  return (await getStaticFiles(directory)).map((filepath) =>
+  const files = await getStaticFiles(directory);
+  return files.map((filepath) =>
     path.relative(directory, filepath).split(path.sep).join("/"),
   );
 }
 
+/** Copies all static assets into a validated @minifw package repository. */
 export async function syncStaticFiles(
   rootDirectory: string,
   options: SyncOptions = {},

@@ -89,7 +89,7 @@ describe("validatePackage()", () => {
       MiniToolingErrors.PackValidCannotReadPackageFile,
     );
     expectError(
-      () => getPackageName(JSON.stringify(null), filepath),
+      () => getPackageName("null", filepath),
       MiniToolingErrors.PackValidInvalidPackageFile,
     );
     expectError(

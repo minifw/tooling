@@ -17,6 +17,7 @@ export interface CopyFilesOptions {
   onEvent?: (event: CopyFileEvent) => void;
 }
 
+/** Reads a file relative to the current working directory. */
 export async function readFile(filepath: string): Promise<Buffer> {
   const resolved = path.resolve(process.cwd(), filepath);
 
@@ -27,6 +28,7 @@ export async function readFile(filepath: string): Promise<Buffer> {
   }
 }
 
+/** Writes data to a file relative to the current working directory. */
 export async function writeFile(data: Buffer, filepath: string): Promise<void> {
   const resolved = path.resolve(process.cwd(), filepath);
 
@@ -60,6 +62,7 @@ function getOutputPath(
   return path.resolve(outputDirectory, outputRelativePath);
 }
 
+/** Copies one file into an existing output directory. */
 export async function copyFile(
   input: string,
   outputDirectory: string,
@@ -80,6 +83,7 @@ export async function copyFile(
   return { input: resolvedInput, output };
 }
 
+/** Copies files concurrently and reports individual success or failure results. */
 export async function copyFiles(
   input: string[],
   outputDirectory: string,

@@ -1,6 +1,10 @@
 import { expect } from "bun:test";
 import { MiniToolingError, type MiniToolingErrors } from "./mini-tooling-error";
 
+/**
+ * Asserts that an action throws a {@link MiniToolingError} with the expected
+ * code.
+ */
 export function expectError(
   action: () => unknown,
   code: keyof typeof MiniToolingErrors,

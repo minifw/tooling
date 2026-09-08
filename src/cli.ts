@@ -9,10 +9,6 @@ import { MiniToolingError } from "./mini-tooling-error/mini-tooling-error";
 import { validateGitignore } from "./validate-gitignore/validate-gitignore";
 import { validatePackage } from "./validate-package/validate-package";
 
-function parseConcurrency(value: string): number {
-  return Number(value);
-}
-
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -21,6 +17,7 @@ export interface CliDependencies {
   ensureLocalTooling?: typeof ensureLocalTooling;
 }
 
+/** Creates the command-line program for synchronizing package-managed files. */
 export function createProgram({
   ensureLocalTooling: installLocalTooling = ensureLocalTooling,
 }: CliDependencies = {}): Command {
@@ -34,12 +31,7 @@ export function createProgram({
     .command("sync")
     .description("Synchronize package-managed files into a repository")
     .option("--root-dir <directory>", "repository directory", process.cwd())
-    .option(
-      "--concurrency <count>",
-      "simultaneous file copies",
-      parseConcurrency,
-      5,
-    )
+    .option("--concurrency <count>", "simultaneous file copies", Number, 5)
     .action(async ({ rootDir, concurrency }) => {
       const rootDirectory = path.resolve(rootDir);
       const validationSpinner = ora("Validating repository...").start();
@@ -127,12 +119,18 @@ export function createProgram({
   return program;
 }
 
+/**
+ * Parses and runs the tooling command-line interface with the provided
+ * arguments.
+ */
 export async function runCli(argv = process.argv): Promise<void> {
   await createProgram().parseAsync(argv);
 }
 
 if (import.meta.main) {
-  runCli().catch((error: unknown) => {
+  try {
+    await runCli();
+  } catch (error) {
     console.error(
       chalk.red(
         error instanceof MiniToolingError
@@ -141,5 +139,5 @@ if (import.meta.main) {
       ),
     );
     process.exitCode = 1;
-  });
+  }
 }

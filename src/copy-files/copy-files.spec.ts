@@ -43,7 +43,8 @@ describe("copy files", () => {
     const input = createFile(directory, "input.txt", "source content");
     const output = path.join(directory, "output.txt");
 
-    expect((await readFile(input)).toString()).toBe("source content");
+    const data = await readFile(input);
+    expect(data.toString()).toBe("source content");
     await writeFile(Buffer.from("output content"), output);
     expect(fs.readFileSync(output, "utf8")).toBe("output content");
   });
