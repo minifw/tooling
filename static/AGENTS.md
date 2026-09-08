@@ -1,0 +1,35 @@
+# @minifw Package Guide
+
+## Repository Model
+
+This is an independent `@minifw/<package>` repository. Packages are developed,
+versioned, tested, and released separately; do not assume a monorepo or depend
+on sibling repositories through local paths.
+
+## Managed Files
+
+This file and the shared automation and AI skill files are managed by
+`@minifw/tooling`. Consumer repositories intentionally ignore these paths in
+`.gitignore`, so local changes to them are overwritten and must not be
+committed. `eslint.config.ts`, `prettier.config.ts`, and `tsconfig.json` are
+package-local, tracked configuration files; preserve their package-specific
+settings.
+
+- Synchronize the current repository with `bunx @minifw/tooling sync`.
+- Make shared automation and AI guidance changes in the `static/` directory of
+  the `@minifw/tooling` repository. Update shared ESLint, Prettier, and
+  TypeScript base configurations in its exported source modules. Packages opt
+  into these configurations manually.
+- Keep repository-specific guidance, scripts, source layout, exports, and
+  release decisions in tracked package files such as `README.md` and
+  `package.json`.
+
+## Skills
+
+| Skill                       | When to Use                                                                                            | Path                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| Architecture and public API | Changing package exports, public API boundaries, internal modules, or runtime boundaries.        | [.ai/skills/architecture/SKILL.md](.ai/skills/architecture/SKILL.md)   |
+| JSDoc and public docs       | Adding or revising exported APIs, overloads, types, examples, or API documentation.              | [.ai/skills/jsdoc/SKILL.md](.ai/skills/jsdoc/SKILL.md)                 |
+| Testing                     | Adding, changing, debugging, or reviewing Bun tests, integration suites, and test fixtures.      | [.ai/skills/testing/SKILL.md](.ai/skills/testing/SKILL.md)             |
+| Linting and formatting      | Resolving ESLint, TypeScript, JSDoc, or Prettier findings, or changing code-quality configuration. | [.ai/skills/code-quality/SKILL.md](.ai/skills/code-quality/SKILL.md)   |
+| Build and release           | Changing build output, declarations, package metadata, exports, or preparing a release.           | [.ai/skills/build-release/SKILL.md](.ai/skills/build-release/SKILL.md) |
