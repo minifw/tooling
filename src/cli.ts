@@ -14,6 +14,7 @@ function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+/** Overrides CLI runtime dependencies, primarily for integration tests. */
 export interface CliDependencies {
   ensureLocalTooling?: typeof ensureLocalTooling;
   prepareJsrConfig?: typeof prepareJsrConfig;

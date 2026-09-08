@@ -104,6 +104,7 @@ describe("minifw-tooling prepare", () => {
       JSON.stringify({
         name: "@minifw/example",
         version: "1.2.3",
+        license: "MIT",
         exports: { ".": "./src/index.ts" },
         minifwTooling: {
           jsr: {
@@ -122,6 +123,7 @@ describe("minifw-tooling prepare", () => {
     ).toMatchObject({
       name: "@minifw/example",
       version: "1.2.3",
+      license: "MIT",
       exports: { ".": "./src/index.ts" },
     });
   });

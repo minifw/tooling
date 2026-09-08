@@ -2,6 +2,10 @@ import { MiniToolingError } from "../mini-tooling-error/mini-tooling-error";
 
 const packageName = "@minifw/tooling";
 
+/**
+ * Runs a Bun command in a specified working directory and returns its exit
+ * code.
+ */
 export type RunBunCommand = (
   command: string[],
   options: { cwd: string },

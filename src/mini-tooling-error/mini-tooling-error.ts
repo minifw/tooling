@@ -2,6 +2,7 @@ interface MiniToolingErrorData {
   message: string;
 }
 
+/** Names error conditions reported by the shared tooling package. */
 export const MiniToolingErrors = {
   GitignoreValidNoDir: "GitignoreValidNoDir",
   GitignoreValidInvalidDir: "GitignoreValidInvalidDir",
@@ -29,6 +30,7 @@ export const MiniToolingErrors = {
   PackValidInvalidPackageOrg: "PackValidInvalidPackageOrg",
 } as const;
 
+/** A valid identifier from {@link MiniToolingErrors}. */
 export type MiniToolingErrorCode = keyof typeof MiniToolingErrors;
 
 type ErrorFactory = (...arguments_: never[]) => MiniToolingErrorData;
@@ -116,6 +118,7 @@ const errorList: Record<MiniToolingErrorCode, ErrorFactory> = {
   }),
 };
 
+/** Represents a typed error raised by shared tooling operations. */
 export class MiniToolingError<
   Code extends MiniToolingErrorCode = MiniToolingErrorCode,
 > extends Error {

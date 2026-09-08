@@ -112,6 +112,7 @@ export function writeGitignoreFile(
   }
 }
 
+/** Configures entries removed from the tooling-managed .gitignore section. */
 export interface ValidateGitignoreOptions {
   obsoleteEntries?: readonly string[];
 }

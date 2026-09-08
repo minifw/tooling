@@ -9,6 +9,7 @@ import { validatePackage } from "../validate-package/validate-package";
 
 const staticDirectory: string = path.resolve(import.meta.dir, "../../static");
 
+/** Configures how static files are copied into a package repository. */
 export type SyncOptions = CopyFilesOptions;
 
 async function getStaticFiles(directory = staticDirectory): Promise<string[]> {

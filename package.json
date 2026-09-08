@@ -1,6 +1,6 @@
 {
   "name": "@minifw/tooling",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "a shared set of tools to use across mini-framework repositories",
   "license": "MIT",
   "repository": {

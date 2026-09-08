@@ -2,15 +2,18 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { MiniToolingError } from "../mini-tooling-error/mini-tooling-error";
 
+/** Reports the lifecycle state of copying an individual file. */
 export type CopyFileEvent =
   | { type: "started"; input: string; output: string }
   | { type: "succeeded"; input: string; output: string }
   | { type: "failed"; input: string; output: string; error: unknown };
 
+/** Describes either the success or failure of copying an individual file. */
 export type CopyFileResult =
   | { input: string; output: string; success: true }
   | { input: string; output: string; success: false; error: unknown };
 
+/** Configures concurrent file copying and optional lifecycle callbacks. */
 export interface CopyFilesOptions {
   concurrency?: number;
   getOutputRelativePath?: (input: string) => string;
