@@ -32,6 +32,7 @@ describe("prepareJsrConfig()", () => {
     writePackage(directory, {
       name: "@minifw/example",
       version: "1.2.3",
+      license: "MIT",
       exports: { ".": "./src/index.ts", "./helper": "./src/helper.ts" },
       minifwTooling: {
         jsr: {
@@ -52,6 +53,7 @@ describe("prepareJsrConfig()", () => {
       $schema: "https://jsr.io/schema/config-file.v1.json",
       name: "@minifw/example",
       version: "1.2.3",
+      license: "MIT",
       exports: { ".": "./src/index.ts", "./helper": "./src/helper.ts" },
       publish: {
         include: ["README.md", "src/**/*.ts"],
@@ -68,6 +70,7 @@ describe("prepareJsrConfig()", () => {
     writePackage(directory, {
       name: "@minifw/example",
       version: "1.2.3",
+      license: "MIT",
       exports: {},
     });
 
@@ -82,6 +85,7 @@ describe("prepareJsrConfig()", () => {
     writePackage(directory, {
       name: "@minifw/example",
       version: "1.2.3",
+      license: "MIT",
       exports: { ".": { import: "./src/index.ts" } },
       minifwTooling: { jsr: { publish: { include: [], exclude: [] } } },
     });

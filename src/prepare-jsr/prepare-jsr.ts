@@ -17,6 +17,7 @@ interface JsrPublishMetadata {
 
 interface PackageManifest {
   exports: Record<string, string>;
+  license: string;
   minifwTooling: { jsr: { publish: JsrPublishMetadata } };
   name: string;
   version: string;
@@ -25,6 +26,7 @@ interface PackageManifest {
 interface JsrConfig {
   $schema: string;
   exports: Record<string, string>;
+  license: string;
   name: string;
   publish: JsrPublishMetadata;
   version: string;
@@ -54,7 +56,11 @@ function readPackageManifest(directory: string): {
     throw new MiniToolingError("PackValidCannotReadPackageFile", packagePath);
   }
 
-  if (!isStringRecord(parsed) || typeof parsed.version !== "string")
+  if (
+    !isStringRecord(parsed) ||
+    typeof parsed.license !== "string" ||
+    typeof parsed.version !== "string"
+  )
     throw new MiniToolingError("PackValidInvalidPackageFile", packagePath);
 
   if (
@@ -81,6 +87,7 @@ function readPackageManifest(directory: string): {
   return {
     manifest: {
       exports: parsed.exports as Record<string, string>,
+      license: parsed.license,
       minifwTooling: { jsr: { publish: publishMetadata } },
       name,
       version: parsed.version,
@@ -102,6 +109,7 @@ export function prepareJsrConfig(directory: string): { jsrPath: string } {
     $schema: jsrSchema,
     name: manifest.name,
     version: manifest.version,
+    license: manifest.license,
     exports: manifest.exports,
     publish: manifest.minifwTooling.jsr.publish,
   };
