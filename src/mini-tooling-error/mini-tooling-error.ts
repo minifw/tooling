@@ -2,7 +2,38 @@ interface MiniToolingErrorData {
   message: string;
 }
 
-const errorList = {
+export const MiniToolingErrors = {
+  GitignoreValidNoDir: "GitignoreValidNoDir",
+  GitignoreValidInvalidDir: "GitignoreValidInvalidDir",
+  GitignoreValidInvalidFile: "GitignoreValidInvalidFile",
+  GitignoreValidCannotReadFile: "GitignoreValidCannotReadFile",
+  GitignoreValidCannotWriteFile: "GitignoreValidCannotWriteFile",
+  CopyFilesCannotReadFile: "CopyFilesCannotReadFile",
+  CopyFilesNoOutputDirectory: "CopyFilesNoOutputDirectory",
+  CopyFilesInvalidOutputDirectory: "CopyFilesInvalidOutputDirectory",
+  CopyFilesCannotWriteFile: "CopyFilesCannotWriteFile",
+  CopyFilesInvalidConcurrency: "CopyFilesInvalidConcurrency",
+  LocalToolingInstallFailed: "LocalToolingInstallFailed",
+  JsrPrepareInvalidMetadata: "JsrPrepareInvalidMetadata",
+  JsrPrepareInvalidExports: "JsrPrepareInvalidExports",
+  JsrPrepareCannotWriteFile: "JsrPrepareCannotWriteFile",
+  PackValidNoDir: "PackValidNoDir",
+  PackValidInvalidDir: "PackValidInvalidDir",
+  PackValidNoPackageFile: "PackValidNoPackageFile",
+  PackValidInvalidPackageFile: "PackValidInvalidPackageFile",
+  PackValidCannotReadPackageFile: "PackValidCannotReadPackageFile",
+  PackValidNoPackageName: "PackValidNoPackageName",
+  PackValidInvalidPackageName: "PackValidInvalidPackageName",
+  PackValidNoPackageOrg: "PackValidNoPackageOrg",
+  PackValidMalformedPackageOrg: "PackValidMalformedPackageOrg",
+  PackValidInvalidPackageOrg: "PackValidInvalidPackageOrg",
+} as const;
+
+export type MiniToolingErrorCode = keyof typeof MiniToolingErrors;
+
+type ErrorFactory = (...arguments_: never[]) => MiniToolingErrorData;
+
+const errorList: Record<MiniToolingErrorCode, ErrorFactory> = {
   GitignoreValidNoDir: (directory: string) => ({
     message: `Gitignore validation failed: directory "${directory}" could not be found.`,
   }),
@@ -83,21 +114,6 @@ const errorList = {
   ) => ({
     message: `Package validation failed: the package file "${filepath}" has a name of "${providedName}" with an invalid organization: "${organization}".\n\nThis tool is designed only for use with "@minifw/*" repositories.`,
   }),
-} as const satisfies Record<
-  string,
-  (...arguments_: never[]) => MiniToolingErrorData
->;
-
-export type MiniToolingErrorCode = keyof typeof errorList;
-
-type MiniToolingErrorArguments<Code extends MiniToolingErrorCode> = Parameters<
-  (typeof errorList)[Code]
->;
-
-export const MiniToolingErrors = Object.fromEntries(
-  Object.keys(errorList).map((code) => [code, code]),
-) as {
-  readonly [Code in MiniToolingErrorCode]: Code;
 };
 
 export class MiniToolingError<
@@ -105,10 +121,10 @@ export class MiniToolingError<
 > extends Error {
   constructor(
     public readonly code: Code,
-    ...arguments_: MiniToolingErrorArguments<Code>
+    ...arguments_: unknown[]
   ) {
-    const createError = errorList[code] as (
-      ...arguments__: MiniToolingErrorArguments<Code>
+    const createError = errorList[code] as unknown as (
+      ...arguments__: unknown[]
     ) => MiniToolingErrorData;
 
     const { message } = createError(...arguments_);

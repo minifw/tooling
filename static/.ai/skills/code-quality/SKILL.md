@@ -33,11 +33,12 @@ Every `@minifw/<package>` repository provides these scripts. Run them with
 - `bun run test:types`: type-check the package.
 - `bun run test:unit`: run `*.spec.ts` tests except `*.e2e.spec.ts`.
 - `bun run test:e2e`: run `*.e2e.spec.ts` tests.
+- `bun run test:all`: run every package test tier.
 
 ## Required Validation
 
 - After a source or configuration change, run `bun run lint:fix` and the
-  relevant `test:types`, `test:unit`, and `test:e2e` scripts.
+  relevant `test:all` script.
 - After a documentation-only change, run `bun run lint:fix`.
 - Apply deterministic formatter and lint fixes before reporting remaining
   findings.

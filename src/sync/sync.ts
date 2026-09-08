@@ -7,7 +7,7 @@ import {
 } from "../copy-files/copy-files";
 import { validatePackage } from "../validate-package/validate-package";
 
-const staticDirectory = path.resolve(import.meta.dir, "../../static");
+const staticDirectory: string = path.resolve(import.meta.dir, "../../static");
 
 export type SyncOptions = CopyFilesOptions;
 

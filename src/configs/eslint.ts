@@ -1,10 +1,11 @@
 import prettierPlugin from "eslint-plugin-prettier/recommended";
 import { defineConfig } from "eslint/config";
+import type { Linter } from "eslint";
 import jsdoc from "eslint-plugin-jsdoc";
 import unicorn from "eslint-plugin-unicorn";
 import tseslint from "typescript-eslint";
 
-export default defineConfig(
+const config: Linter.Config[] = defineConfig(
   {
     ignores: ["dist/**", "node_modules/**", "coverage/**", "out/**", "*.tgz"],
     linterOptions: {
@@ -48,3 +49,5 @@ export default defineConfig(
     },
   },
 );
+
+export default config;

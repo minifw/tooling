@@ -14,6 +14,20 @@ configurations at `@minifw/tooling/eslint`, `@minifw/tooling/prettier`, and
 `@minifw/tooling/tsconfig`. Each package chooses whether and how to consume
 them, including its own configuration exceptions.
 
+## Commands
+
+Synchronize the shared files in a package repository:
+
+```bash
+bunx @minifw/tooling sync
+```
+
+Generate that repository's ignored JSR configuration:
+
+```bash
+bunx @minifw/tooling prepare
+```
+
 ## JSR Preparation
 
 Run `bunx @minifw/tooling prepare` from a package repository to generate its
@@ -41,8 +55,6 @@ bun install
 ```
 
 ```bash
-bun run index.ts
+bun run lint
+bun run test:all
 ```
-
-This project was created using `bun init` in bun v1.4.0. [Bun](https://bun.com)
-is a fast all-in-one JavaScript runtime.

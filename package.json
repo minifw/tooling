@@ -1,6 +1,21 @@
 {
   "name": "@minifw/tooling",
   "version": "0.1.0",
+  "description": "a shared set of tools to use across mini-framework repositories",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minifw/tooling.git"
+  },
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "static/LICENSE.md",
+    "index.ts",
+    "src/**/*.ts",
+    "!src/**/*.spec.ts",
+    "!src/**/*.harness.ts"
+  ],
   "module": "index.ts",
   "exports": {
     ".": "./src/index.ts",
@@ -9,7 +24,7 @@
     "./tsconfig": "./src/configs/tsconfig.json"
   },
   "bin": {
-    "minifw-tooling": "./src/cli.ts"
+    "minifw-tooling": "src/cli.ts"
   },
   "scripts": {
     "sync": "bun run src/link-static/link-static.ts",
@@ -18,19 +33,23 @@
     "lint:fix": "prettier . -w && eslint . --fix",
     "test:unit": "bun test --path-ignore-patterns '**/*.e2e.spec.ts'",
     "test:types": "tsc --noEmit",
-    "test:e2e": "bun test --pass-with-no-tests e2e.spec.ts"
+    "test:e2e": "bun test --pass-with-no-tests e2e.spec.ts",
+    "test:all": "bun run test:types && bun run test:unit && bun run test:e2e",
+    "pack:check": "npm pack --dry-run"
   },
   "minifwTooling": {
     "jsr": {
       "publish": {
         "include": [
-          "LICENSE.md",
+          "CHANGELOG.md",
+          "static/LICENSE.md",
           "README.md",
           "src/**/*.ts",
           "src/**/*.json"
         ],
         "exclude": [
-          "**/*.spec.ts"
+          "**/*.spec.ts",
+          "**/*.harness.ts"
         ]
       }
     }
