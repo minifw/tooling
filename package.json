@@ -1,6 +1,6 @@
 {
   "name": "@minifw/tooling",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "a shared set of tools to use across mini-framework repositories",
   "license": "MIT",
   "repository": {
@@ -38,6 +38,11 @@
     "pack:check": "npm pack --dry-run"
   },
   "minifwTooling": {
+    "sync": {
+      "exclude": [
+        ".github/workflows/ci.yml"
+      ]
+    },
     "jsr": {
       "publish": {
         "include": [

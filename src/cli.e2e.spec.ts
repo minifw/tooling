@@ -118,6 +118,35 @@ describe("minifw-tooling sync", () => {
     );
   });
 
+  it("does not check configured static file exclusions", async () => {
+    const repository = createTemporaryDirectory();
+    fs.writeFileSync(
+      path.join(repository, "package.json"),
+      JSON.stringify({
+        name: "@minifw/example",
+        minifwTooling: { sync: { exclude: ["AGENTS.md"] } },
+      }),
+    );
+    await syncStaticFiles(repository);
+    fs.writeFileSync(path.join(repository, "AGENTS.md"), "local guidance\n");
+
+    await createProgram({
+      ensureLocalTooling: async () => {
+        throw new Error("--check must not install local tooling");
+      },
+      setExitCode: (code) => {
+        exitCode = code;
+      },
+    }).parseAsync(["sync", "--check", "--root-dir", repository], {
+      from: "user",
+    });
+
+    expect(exitCode).toBeUndefined();
+    expect(fs.readFileSync(path.join(repository, "AGENTS.md"), "utf8")).toBe(
+      "local guidance\n",
+    );
+  });
+
   it("exits cleanly when repository validation fails before copying", async () => {
     const repository = createTemporaryDirectory();
     fs.writeFileSync(

@@ -5,7 +5,11 @@ import {
   type CopyFileResult,
   type CopyFilesOptions,
 } from "../copy-files/copy-files";
-import { validatePackage } from "../validate-package/validate-package";
+import { MiniToolingError } from "../mini-tooling-error/mini-tooling-error";
+import {
+  getPackageFile,
+  validatePackage,
+} from "../validate-package/validate-package";
 
 const staticDirectory: string = path.resolve(import.meta.dir, "../../static");
 
@@ -16,18 +20,61 @@ function isCheckedStaticFile(filepath: string): boolean {
   return !filepath.startsWith(".husky/");
 }
 
-async function getStaticFiles(directory = staticDirectory): Promise<string[]> {
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) && value.every((entry) => typeof entry === "string")
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** Lists static file paths excluded by a repository's package manifest. */
+export function getExcludedStaticFiles(rootDirectory: string): Set<string> {
+  const { packageInfo, packagePath } = getPackageFile(rootDirectory);
+  const packageManifest = JSON.parse(packageInfo) as Record<string, unknown>;
+  const tooling = packageManifest.minifwTooling;
+
+  if (tooling === undefined) return new Set();
+  if (!isRecord(tooling))
+    throw new MiniToolingError("SyncInvalidExclude", packagePath);
+
+  const sync = tooling.sync;
+  if (sync === undefined) return new Set();
+  if (!isRecord(sync))
+    throw new MiniToolingError("SyncInvalidExclude", packagePath);
+
+  if (!isStringArray(sync.exclude))
+    throw new MiniToolingError("SyncInvalidExclude", packagePath);
+
+  return new Set(sync.exclude);
+}
+
+async function getStaticFiles(
+  directory = staticDirectory,
+  excludedFiles: ReadonlySet<string> = new Set(),
+  rootDirectory = directory,
+): Promise<string[]> {
   const files = await fs.readdir(directory, { withFileTypes: true });
   const nestedFiles = await Promise.all(
     files.map(async (file) => {
       const filepath = path.join(directory, file.name);
       if (file.isFile()) return [filepath];
-      if (file.isDirectory()) return getStaticFiles(filepath);
+      if (file.isDirectory())
+        return getStaticFiles(filepath, excludedFiles, rootDirectory);
       return [];
     }),
   );
 
-  return nestedFiles.flat();
+  return nestedFiles
+    .flat()
+    .filter(
+      (filepath) =>
+        !excludedFiles.has(
+          path.relative(rootDirectory, filepath).split(path.sep).join("/"),
+        ),
+    );
 }
 
 /**
@@ -36,8 +83,9 @@ async function getStaticFiles(directory = staticDirectory): Promise<string[]> {
  */
 export async function getManagedFilePaths(
   directory = staticDirectory,
+  excludedFiles: ReadonlySet<string> = new Set(),
 ): Promise<string[]> {
-  const files = await getStaticFiles(directory);
+  const files = await getStaticFiles(directory, excludedFiles);
   return files.map((filepath) =>
     path.relative(directory, filepath).split(path.sep).join("/"),
   );
@@ -49,7 +97,10 @@ export async function checkStaticFiles(
 ): Promise<string[]> {
   validatePackage(rootDirectory);
 
-  const inputs = await getStaticFiles();
+  const inputs = await getStaticFiles(
+    staticDirectory,
+    getExcludedStaticFiles(rootDirectory),
+  );
   const outOfSyncFiles = await Promise.all(
     inputs.map(async (input) => {
       const relativePath = path.relative(staticDirectory, input);
@@ -79,7 +130,10 @@ export async function syncStaticFiles(
 ): Promise<CopyFileResult[]> {
   validatePackage(rootDirectory);
 
-  const inputs = await getStaticFiles();
+  const inputs = await getStaticFiles(
+    staticDirectory,
+    getExcludedStaticFiles(rootDirectory),
+  );
   return copyFiles(inputs, rootDirectory, {
     ...options,
     getOutputRelativePath: (input) => path.relative(staticDirectory, input),

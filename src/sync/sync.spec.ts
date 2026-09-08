@@ -64,6 +64,40 @@ describe("syncStaticFiles()", () => {
     });
   });
 
+  it("keeps configured static file exclusions local", async () => {
+    const repository = createTemporaryDirectory();
+    fs.writeFileSync(
+      path.join(repository, "package.json"),
+      JSON.stringify({
+        name: "@minifw/example",
+        minifwTooling: { sync: { exclude: ["AGENTS.md"] } },
+      }),
+    );
+    fs.writeFileSync(path.join(repository, "AGENTS.md"), "local guidance\n");
+
+    await syncStaticFiles(repository);
+
+    expect(fs.readFileSync(path.join(repository, "AGENTS.md"), "utf8")).toBe(
+      "local guidance\n",
+    );
+    expect(await checkStaticFiles(repository)).toEqual([]);
+  });
+
+  it("rejects invalid static file exclusion metadata", async () => {
+    const repository = createTemporaryDirectory();
+    fs.writeFileSync(
+      path.join(repository, "package.json"),
+      JSON.stringify({
+        name: "@minifw/example",
+        minifwTooling: { sync: { exclude: "AGENTS.md" } },
+      }),
+    );
+
+    await expect(syncStaticFiles(repository)).rejects.toMatchObject({
+      code: MiniToolingErrors.SyncInvalidExclude,
+    });
+  });
+
   it("reports tracked static files that are missing or changed", async () => {
     const repository = createRepository("@minifw/example");
     await syncStaticFiles(repository);

@@ -54,6 +54,35 @@ describe("linkStaticFiles()", () => {
     ).toBe("shared\n");
   });
 
+  it("keeps excluded static files local", async () => {
+    const inputDirectory = createTemporaryDirectory();
+    const outputDirectory = createTemporaryDirectory();
+    const workflow = ".github/workflows/ci.yml";
+    fs.mkdirSync(path.join(inputDirectory, ".github", "workflows"), {
+      recursive: true,
+    });
+    fs.writeFileSync(path.join(inputDirectory, workflow), "shared workflow\n");
+    fs.writeFileSync(path.join(inputDirectory, "AGENTS.md"), "shared\n");
+    fs.mkdirSync(path.join(outputDirectory, ".github", "workflows"), {
+      recursive: true,
+    });
+    fs.writeFileSync(path.join(outputDirectory, workflow), "local workflow\n");
+
+    const linkedFiles = await linkStaticFiles(
+      outputDirectory,
+      inputDirectory,
+      new Set([workflow]),
+    );
+
+    expect(linkedFiles).not.toContain(workflow);
+    expect(fs.readFileSync(path.join(outputDirectory, workflow), "utf8")).toBe(
+      "local workflow\n",
+    );
+    expect(
+      fs.readFileSync(path.join(outputDirectory, "AGENTS.md"), "utf8"),
+    ).toBe("shared\n");
+  });
+
   it("copies ignore files because Git does not support symbolic links for them", async () => {
     const inputDirectory = createTemporaryDirectory();
     const outputDirectory = createTemporaryDirectory();

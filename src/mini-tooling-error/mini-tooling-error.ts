@@ -15,6 +15,7 @@ export const MiniToolingErrors = {
   CopyFilesCannotWriteFile: "CopyFilesCannotWriteFile",
   CopyFilesInvalidConcurrency: "CopyFilesInvalidConcurrency",
   LocalToolingInstallFailed: "LocalToolingInstallFailed",
+  SyncInvalidExclude: "SyncInvalidExclude",
   JsrPrepareInvalidMetadata: "JsrPrepareInvalidMetadata",
   JsrPrepareInvalidExports: "JsrPrepareInvalidExports",
   JsrPrepareCannotWriteFile: "JsrPrepareCannotWriteFile",
@@ -68,6 +69,9 @@ const errorList: Record<MiniToolingErrorCode, ErrorFactory> = {
   }),
   LocalToolingInstallFailed: (directory: string) => ({
     message: `Local tooling installation failed in "${directory}".`,
+  }),
+  SyncInvalidExclude: (filepath: string) => ({
+    message: `Static file synchronization failed: "${filepath}" must define minifwTooling.sync.exclude as a string array.`,
   }),
   JsrPrepareInvalidMetadata: (filepath: string) => ({
     message: `JSR preparation failed: "${filepath}" must define minifwTooling.jsr.publish.include and minifwTooling.jsr.publish.exclude as string arrays.`,

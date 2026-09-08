@@ -36,3 +36,4 @@ intentionally ignored.
 | Testing                     | Adding, changing, debugging, or reviewing Bun tests, integration suites, and test fixtures.        | [.ai/skills/testing/SKILL.md](.ai/skills/testing/SKILL.md)             |
 | Linting and formatting      | Resolving ESLint, TypeScript, JSDoc, or Prettier findings, or changing code-quality configuration. | [.ai/skills/code-quality/SKILL.md](.ai/skills/code-quality/SKILL.md)   |
 | Build and release           | Changing build output, declarations, package metadata, exports, or preparing a release.            | [.ai/skills/build-release/SKILL.md](.ai/skills/build-release/SKILL.md) |
+| Documentation voice         | Writing or revising READMEs, guides, changelogs, comments, JSDoc, or other documentation.          | [.ai/skills/documentation/SKILL.md](.ai/skills/documentation/SKILL.md) |
