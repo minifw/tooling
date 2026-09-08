@@ -2,7 +2,7 @@
 
 a shared set of tools to use across mini-framework repositories.
 
-> [!WARNING] this is an internal tool
+> [!WARNING]
 >
 > this package only works inside `@minifw` repositories. it is not designed as
 > general-purpose tooling for external packages or repositories.
