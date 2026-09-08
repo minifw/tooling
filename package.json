@@ -12,7 +12,28 @@
     "minifw-tooling": "./src/cli.ts"
   },
   "scripts": {
-    "link-static": "bun run src/link-static/link-static.ts"
+    "sync": "bun run src/link-static/link-static.ts",
+    "prepack": "bun run src/cli.ts prepare",
+    "lint": "prettier . -c && eslint .",
+    "lint:fix": "prettier . -w && eslint . --fix",
+    "test:unit": "bun test --path-ignore-patterns '**/*.e2e.spec.ts'",
+    "test:types": "tsc --noEmit",
+    "test:e2e": "bun test --pass-with-no-tests e2e.spec.ts"
+  },
+  "minifwTooling": {
+    "jsr": {
+      "publish": {
+        "include": [
+          "LICENSE.md",
+          "README.md",
+          "src/**/*.ts",
+          "src/**/*.json"
+        ],
+        "exclude": [
+          "**/*.spec.ts"
+        ]
+      }
+    }
   },
   "type": "module",
   "devDependencies": {

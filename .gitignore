@@ -64,3 +64,4 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 /.github/workflows/publish-jsr.yml
 /.github/workflows/ci.yml
 /LICENSE.md
+jsr.json

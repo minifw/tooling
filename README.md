@@ -14,9 +14,20 @@ configurations at `@minifw/tooling/eslint`, `@minifw/tooling/prettier`, and
 `@minifw/tooling/tsconfig`. Each package chooses whether and how to consume
 them, including its own configuration exceptions.
 
+## JSR Preparation
+
+Run `bunx @minifw/tooling prepare` from a package repository to generate its
+ignored `jsr.json`. The command derives the JSR package name, version, and
+exports from `package.json`. Each package supplies its source-specific publish
+paths through `minifwTooling.jsr.publish.include` and
+`minifwTooling.jsr.publish.exclude` in `package.json`.
+
+Use `"prepack": "bunx @minifw/tooling prepare"` to generate the configuration
+immediately before packing or publishing.
+
 ## Static Development
 
-Run `bun run link-static` to create relative symbolic links from every file in
+Run `bun run sync` to create relative symbolic links from every file in
 `static/` to its matching root path. The command is idempotent and refuses to
 replace a file or a symbolic link that points elsewhere. Static `.gitignore`
 files are copied because Git does not support symbolic links for ignore files.
