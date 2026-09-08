@@ -1,5 +1,11 @@
 import type { Config } from "prettier";
 
+/**
+ * Prettier configuration for `@minifw` packages
+ *
+ * @module
+ */
+
 const config: Config = {
   plugins: ["prettier-plugin-jsdoc", "prettier-plugin-css-order"],
   semi: true,
@@ -11,4 +17,5 @@ const config: Config = {
   endOfLine: "lf",
 };
 
+/** Prettier configuration for `@minifw` packages */
 export default config;

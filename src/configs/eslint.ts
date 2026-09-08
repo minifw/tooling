@@ -5,6 +5,12 @@ import jsdoc from "eslint-plugin-jsdoc";
 import unicorn from "eslint-plugin-unicorn";
 import tseslint from "typescript-eslint";
 
+/**
+ * ESLint configuration for `@minifw` packages
+ *
+ * @module
+ */
+
 const config: Linter.Config[] = defineConfig(
   {
     ignores: ["dist/**", "node_modules/**", "coverage/**", "out/**", "*.tgz"],
@@ -50,4 +56,5 @@ const config: Linter.Config[] = defineConfig(
   },
 );
 
+/** ESLint configuration for `@minifw` packages */
 export default config;
