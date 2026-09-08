@@ -67,9 +67,9 @@ export async function checkStaticFiles(
     }),
   );
 
-  return outOfSyncFiles.filter(
-    (filepath): filepath is string => filepath !== undefined,
-  );
+  return outOfSyncFiles
+    .filter((filepath): filepath is string => filepath !== undefined)
+    .toSorted();
 }
 
 /** Copies all static assets into a validated @minifw package repository. */
